@@ -1,0 +1,50 @@
+.menu-smooth {
+  opacity: 0;
+  transform: translateY(-10px);  
+  transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  max-width: 400px;
+}
+
+.hover-dropdown:hover .menu-smooth {
+  opacity: 1;
+  transform: translateY(0); 
+  display: block;  
+}
+
+.hover-dropdown .menu-smooth {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);  
+}
+
+ .dropdown-item:hover {
+  background-color: #f8f9fa !important;  
+  color: #fcbd01;  
+}
+.hovering:hover{
+  color: #fcbd01;  
+}
+#dropdown-products{
+ color: rgb(80, 78, 78);
+}
+#dropdown-products:hover{
+  color: #fcbd01;
+ }
+
+
+.dropdown-toggle {
+  transition: color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  color: #fcbd01; 
+}
+
+.dropdown-menu {
+  position: absolute; 
+  z-index: 1050; 
+}
+
+.hover-dropdown:hover .dropdown-toggle {
+  color: #fcbd01;
+}
+

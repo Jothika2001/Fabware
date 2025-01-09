@@ -1,0 +1,136 @@
+
+footer {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 40px;
+}
+
+
+.footer .image-container {
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.footer .image-container img {
+  max-height: 36px; 
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; 
+  gap: 20px;
+  width: 100%;
+  margin-top: 50px;
+}
+
+.footer-desc p {
+  font-family: Lato, sans-serif;
+  font-size: 14px;
+  color: #969696;
+  line-height: 24px;
+  text-align: left;
+}
+
+.footer-links, .quick-links, .product-links, .footer-about {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 100%;
+}
+.footer-links{
+  flex-direction: row;
+}
+
+.footer-links a, .quick-links a, .product-links a, .footer-about a {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+}
+
+.footer-links i, .footer-about button img {
+  color: #333;
+}
+
+.bt-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  background: #eaf1fb;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 15px;
+  width: 100%; 
+}
+
+.bt-in {
+  border-radius: 10px;
+ background-color: rgb(206, 242, 248);
+  padding: 9px;
+  font-size: 14px;
+  flex-grow: 1; 
+}
+
+.bt-img {
+  width: 20px; 
+  height: 20px; 
+  object-fit: contain; 
+  cursor: pointer;
+}
+
+
+.copyright {
+  font-family: Lato, sans-serif;
+  font-size: 14px;
+  color: #a3a3a3;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Media Queries */
+@media screen and (min-width: 601px) {
+  .footer-content {
+    flex-wrap: nowrap;
+  }
+
+  .footer-links, .quick-links, .product-links, .footer-about {
+    max-width: 25%;
+  }
+
+  .footer-desc {
+    width: 400px;
+  }
+
+  .footer-about {
+    justify-content: flex-start;
+  }
+
+  .footer-about button {
+    width: auto;
+  }
+}
+
+/* Mobile devices below 600px */
+@media screen and (max-width: 600px) {
+  .footer-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .footer-desc p {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .footer-links, .quick-links, .product-links, .footer-about {
+    width: 100%;
+  }
+
+  .footer-about button {
+    width: 9%;
+  }
+
+  .copyright {
+    margin-top: 80px;
+  }
+}

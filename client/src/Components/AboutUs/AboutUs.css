@@ -1,0 +1,45 @@
+*
+{
+  font-family: Lato;
+}
+/* For medium screens (tablets) */
+@media (max-width: 992px) {
+  .heading-about {
+    font-size: 2.5rem !important;
+  }
+
+  .heading-para  {
+    font-size: 1rem !important;
+  }
+
+  .about-title {
+    font-size: 1.6rem !important;
+  }
+
+  .about-text {
+    font-size: 1rem !important;
+  }
+}
+
+/* For small screens (mobile) */
+@media (max-width: 576px) {
+  .heading-about {
+    font-size: 2rem !important;
+  }
+
+  .heading-para {
+    font-size: 0.9rem !important;
+  }
+
+  .about-title {
+    font-size: 1.4rem !important;
+  }
+
+  .about-text {
+    font-size: 0.9rem !important;
+  }
+
+  .about-btn {
+    font-size: 1rem !important;
+  }
+}

@@ -1,0 +1,146 @@
+.FAQ {
+  margin: 0px 150px;
+  margin-top: 100px;
+}
+
+.FAQ .faq-title {
+  font-family: Lato;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 64px;
+  text-align: left;
+  color: #18191f;
+}
+
+.FAQ .faq-content {
+  display: flex;
+  width: 1237px;
+  gap: 150px;
+  margin-top: 50px;
+}
+
+.questions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.faq-content .questions h4 {
+  display: flex;
+  /* align-items: center; */
+  /* justify-content: space-between; */
+  gap: 50px;
+  width: 640px;
+  cursor: pointer;
+  flex-direction: row;
+  text-align: left;
+}
+
+.faq-content .questions p {
+  font-family: Lato;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+  color: #333333cc;
+  margin-left: 75px;
+  margin-bottom: 20px;
+}
+
+.faq-content .questions h4 div {
+  text-align: left;
+  width: 520x;
+}
+
+
+
+@media screen and (min-width: 1200px) {
+  .FAQ {
+    margin: 0px 150px;
+    margin-top: 100px;
+  }
+
+  .faq-content {
+    gap: 150px;
+    width: 1237px;
+  }
+
+  .faq-content .questions h4 {
+    gap: 50px;
+    width: 640px;
+  }
+
+  .faq-content .questions p {
+    margin-left: 75px;
+  }
+}
+
+/* Tablets (768px to 1199px) */
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+  .FAQ {
+    margin: 0px 50px;
+  }
+
+  .faq-title {
+    font-size: 32px;
+    line-height: 48px;
+    text-align: center;
+  }
+
+  .faq-content {
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .faq-content .questions h4 {
+    width: 100%;
+    gap: 20px;
+  }
+
+  .faq-content .questions p {
+    margin-left: 50px;
+    text-align: center;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .FAQ {
+    margin: 20px;
+    margin-top: 150px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .faq-title {
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
+  }
+
+  .faq-content {
+    flex-direction: column-reverse;
+    gap: 30px;
+  }
+
+  .faq-content .questions h4 {
+    font-size: 12px;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .faq-content .questions p {
+    font-size: 10px;
+    margin-right: 1000px;
+    width: 300px;
+  }
+  .faq-main-img {
+    width: 300px;
+
+  }
+
+  .questions img{
+    width: 16px;
+  }
+}
