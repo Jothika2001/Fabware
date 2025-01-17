@@ -3,7 +3,7 @@ import images from "../../assets/images";
 import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav, Container, Dropdown, Button } from 'react-bootstrap';
-import "./header.css"; 
+import "./Header.css"; 
 
 function Header() {
   // State to track whether navbar is collapsed or not
