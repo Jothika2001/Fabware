@@ -221,7 +221,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 // MongoDB setup
-const mongoURI = process.env.MONGO_URL || "mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/";
+const mongoURI = process.env.MONGO_URL || "mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/feedbackDB";
 const client = new MongoClient(mongoURI, {
   useUnifiedTopology: true,
   useNewUrlParser: true,  // Ensures no deprecation warnings for new URL parser
