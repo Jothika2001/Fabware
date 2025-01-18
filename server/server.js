@@ -644,7 +644,7 @@ app.post("/submit-feedback", upload.single("image"), async (req, res) => {
     }
 
     // Store the Excel file temporarily on the server
-    const excelFilePath = path.join(__dirname, "feedback_data.xlsx");
+    const excelFilePath = path.join("/tmp", "feedback_data.xlsx");
     await workbook.xlsx.writeFile(excelFilePath);
 
     res.json({
@@ -694,7 +694,7 @@ const isAdmin = (req, res, next) => {
 };
 
 app.get("/download-feedback", verifyToken, isAdmin, (req, res) => {
-  const filePath = path.join(__dirname, "feedback_data.xlsx");
+  const filePath = path.join("/tmp", "feedback_data.xlsx");
 
   if (fs.existsSync(filePath)) {
     res.setHeader(
