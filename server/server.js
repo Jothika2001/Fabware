@@ -217,6 +217,7 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const MongoClient = require("mongodb").MongoClient;
+const cors = require("cors");
 require("dotenv").config();
 
 // MongoDB setup
