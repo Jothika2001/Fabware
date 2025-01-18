@@ -207,29 +207,29 @@
 // app.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
 // });
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+const ExcelJS = require("exceljs");
+const cors = require("cors");
+require("dotenv").config();
 
-
-
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const fs = require('fs');
-const path = require('path');
-const multer = require('multer');
-const ExcelJS = require('exceljs');
-const cors = require('cors');
-require('dotenv').config();
-
-// Set up file storage for images in the `/tmp` directory for Vercel serverless functions
+// Set up file storage for images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = '/tmp'; // Use the /tmp directory in Vercel for temporary storage
+    const uploadPath = path.join(__dirname, "uploads/feedbackimage");
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     const originalName = file.originalname;
-    const sanitizedFileName = originalName.replace(/[^a-zA-Z0-9.-_]/g, '_'); // Sanitize filename
-    cb(null, sanitizedFileName); // Use sanitized name
-  }
+    const sanitizedFileName = originalName.replace(/[^a-zA-Z0-9.-_]/g, "_");
+    cb(null, sanitizedFileName);
+  },
 });
 const upload = multer({ storage });
 
@@ -237,15 +237,24 @@ const upload = multer({ storage });
 const app = express();
 const PORT = process.env.PORT;
 const SECRET_KEY = process.env.SECRET_KEY;
-const adminUser = { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD };
+const adminUser = {
+  username: process.env.ADMIN_USERNAME,
+  password: process.env.ADMIN_PASSWORD,
+};
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: '*',
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions));
 app.use(express.json());
 
+
 // Welcome route
-app.get('/', (req, res) => {
-  res.send('Welcome to the API');
+app.get("/", (req, res) => {
+  res.send("Welcome to the API");
 });
 
 // Start the server
@@ -254,18 +263,17 @@ app.listen(PORT, () => {
 });
 
 // Post route to handle feedback and image uploads
-app.post("/submit-feedback", upload.single('image'), async (req, res) => {
+app.post("/submit-feedback", upload.single("image"), async (req, res) => {
   const feedbackData = req.body;
-  const imagePath = req.file ? path.join('/tmp', req.file.filename) : null;
+  const imagePath = req.file ? path.join("uploads/feedbackimage", req.file.filename) : null;
 
   if (imagePath) {
     feedbackData.imagePath = imagePath;
   }
 
   try {
-    // Create an Excel file in memory
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Feedback');
+    const worksheet = workbook.addWorksheet("Feedback");
 
     // Add headers to the worksheet
     worksheet.columns = [
@@ -274,16 +282,28 @@ app.post("/submit-feedback", upload.single('image'), async (req, res) => {
       { header: 'Email', key: 'email', width: 25 },
       { header: 'Reward Option', key: 'rewardOption', width: 20 },
       { header: 'Image Path', key: 'imagePath', width: 40 },
+      { header: 'Image', key: 'image', width: 30 }
     ];
 
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).alignment = {
+      horizontal: "center",
+      vertical: "middle",
+    };
+    worksheet.getRow(1).height = 30;
+
     // Add a new row with feedback data
-    worksheet.addRow({
-      name: feedbackData.name,
-      phoneNumber: feedbackData.phoneNumber,
-      email: feedbackData.email,
-      rewardOption: feedbackData.rewardOption,
-      imagePath: imagePath || '',  // If no image, store an empty string
-    });
+    const row = worksheet.addRow([
+      feedbackData.name,
+      feedbackData.phoneNumber,
+      feedbackData.email,
+      feedbackData.rewardOption,
+      imagePath || "", // If no image, store an empty string
+      "", // Placeholder for image
+    ]);
+
+    row.height = 50;
+    row.alignment = { vertical: "middle", horizontal: "center" };
 
     // If there's an image, add it as an embedded image in the Excel sheet
     if (imagePath) {
@@ -294,9 +314,11 @@ app.post("/submit-feedback", upload.single('image'), async (req, res) => {
       });
 
       worksheet.addImage(imageId, {
-        tl: { col: 5, row: 1 },
+        tl: { col: 6, row: row.number - 1 }, // Place image in the 6th column
         ext: { width: 100, height: 100 },
       });
+
+      worksheet.getRow(row.number).height = 200; // Adjust row height for image
     }
 
     // Create a buffer from the workbook to send as a response
@@ -307,61 +329,239 @@ app.post("/submit-feedback", upload.single('image'), async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename=feedback_data.xlsx');
     res.send(excelBuffer);
   } catch (e) {
-    console.error('Error:', e);
     res.status(500).json({ message: e.message });
   }
 });
 
+
 // Admin login (username and password)
-app.post('/admin/login', (req, res) => {
+app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
 
   if (username === adminUser.username && password === adminUser.password) {
-    const token = jwt.sign({ username: adminUser.username, role: 'admin' }, SECRET_KEY, { expiresIn: '1m' });
-    res.json({ message: 'Login successful', token });
+    const token = jwt.sign(
+      { username: adminUser.username, role: "admin" },
+      SECRET_KEY,
+      { expiresIn: "2m" }
+    );
+    res.json({ message: "Login successful", token });
   } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+    res
+      .status(401)
+      .json({ message: "Invalid credentials...This page is only for Admin" });
   }
 });
 
 // Protect routes with JWT (for downloading the Excel file, etc.)
 const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization');
-  if (!token) return res.status(401).send('Access denied. No token provided.');
+  const token = req.header("Authorization");
+  if (!token) return res.status(401).send("Access denied. No token provided.");
 
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(400).send('Invalid token');
+    return res.status(400).send("Invalid token");
   }
 };
 
 // Admin access middleware
 const isAdmin = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).send('Access denied. Admins only.');
+  if (req.user.role !== "admin") {
+    return res.status(403).send("Access denied. Admins only.");
   }
   next();
 };
 
-// Admin download route for feedback data
-app.get('/download-feedback', verifyToken, isAdmin, (req, res) => {
-  const filePath = path.join('/tmp', 'fabware.xlsx');
-  console.log('Looking for file at:', filePath);  // Add debug log
+// Route to download the Excel file (admin only)
+app.get("/download-feedback", verifyToken, isAdmin, (req, res) => {
+  const filePath = path.join(__dirname, "fabware.xlsx");
+
   if (fs.existsSync(filePath)) {
-    console.log('File found, sending...');  // Add debug log
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=feedback_data.xlsx');
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=feedback_data.xlsx"
+    );
+
     res.sendFile(filePath, (err) => {
       if (err) {
-        res.status(500).json({ message: 'Error sending file' });
+        res.status(500).json({ message: "Error sending file" });
       }
     });
   } else {
-    console.log('File not found');  // Add debug log
-    res.status(404).json({ message: 'File not found' });
+    res.status(404).json({ message: "File not found" });
   }
 });
+
+// Correct the static folder path in your server.js
+
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Send the index.html for all other routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+});
+
+
+
+// const express = require('express');
+// const jwt = require('jsonwebtoken');
+// const fs = require('fs');
+// const path = require('path');
+// const multer = require('multer');
+// const ExcelJS = require('exceljs');
+// const cors = require('cors');
+// require('dotenv').config();
+
+// // Set up file storage for images in the `/tmp` directory for Vercel serverless functions
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     const uploadPath = '/tmp'; // Use the /tmp directory in Vercel for temporary storage
+//     cb(null, uploadPath);
+//   },
+//   filename: (req, file, cb) => {
+//     const originalName = file.originalname;
+//     const sanitizedFileName = originalName.replace(/[^a-zA-Z0-9.-_]/g, '_'); // Sanitize filename
+//     cb(null, sanitizedFileName); // Use sanitized name
+//   }
+// });
+// const upload = multer({ storage });
+
+// // Initialize Express app
+// const app = express();
+// const PORT = process.env.PORT;
+// const SECRET_KEY = process.env.SECRET_KEY;
+// const adminUser = { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD };
+
+// // Middleware
+// app.use(cors());
+// app.use(express.json());
+
+// // Welcome route
+// app.get('/', (req, res) => {
+//   res.send('Welcome to the API');
+// });
+
+// // Start the server
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+// // Post route to handle feedback and image uploads
+// app.post("/submit-feedback", upload.single('image'), async (req, res) => {
+//   const feedbackData = req.body;
+//   const imagePath = req.file ? path.join('/tmp', req.file.filename) : null;
+
+//   if (imagePath) {
+//     feedbackData.imagePath = imagePath;
+//   }
+
+//   try {
+//     // Create an Excel file in memory
+//     const workbook = new ExcelJS.Workbook();
+//     const worksheet = workbook.addWorksheet('Feedback');
+
+//     // Add headers to the worksheet
+//     worksheet.columns = [
+//       { header: 'Name', key: 'name', width: 20 },
+//       { header: 'Phone Number', key: 'phoneNumber', width: 20 },
+//       { header: 'Email', key: 'email', width: 25 },
+//       { header: 'Reward Option', key: 'rewardOption', width: 20 },
+//       { header: 'Image Path', key: 'imagePath', width: 40 },
+//     ];
+
+//     // Add a new row with feedback data
+//     worksheet.addRow({
+//       name: feedbackData.name,
+//       phoneNumber: feedbackData.phoneNumber,
+//       email: feedbackData.email,
+//       rewardOption: feedbackData.rewardOption,
+//       imagePath: imagePath || '',  // If no image, store an empty string
+//     });
+
+//     // If there's an image, add it as an embedded image in the Excel sheet
+//     if (imagePath) {
+//       const imageBuffer = fs.readFileSync(imagePath);
+//       const imageId = workbook.addImage({
+//         buffer: imageBuffer,
+//         extension: 'jpeg', // Assuming it's a JPEG image
+//       });
+
+//       worksheet.addImage(imageId, {
+//         tl: { col: 5, row: 1 },
+//         ext: { width: 100, height: 100 },
+//       });
+//     }
+
+//     // Create a buffer from the workbook to send as a response
+//     const excelBuffer = await workbook.xlsx.writeBuffer();
+
+//     // Send the Excel file as a response
+//     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+//     res.setHeader('Content-Disposition', 'attachment; filename=feedback_data.xlsx');
+//     res.send(excelBuffer);
+//   } catch (e) {
+//     console.error('Error:', e);
+//     res.status(500).json({ message: e.message });
+//   }
+// });
+
+// // Admin login (username and password)
+// app.post('/admin/login', (req, res) => {
+//   const { username, password } = req.body;
+
+//   if (username === adminUser.username && password === adminUser.password) {
+//     const token = jwt.sign({ username: adminUser.username, role: 'admin' }, SECRET_KEY, { expiresIn: '1m' });
+//     res.json({ message: 'Login successful', token });
+//   } else {
+//     res.status(401).json({ message: 'Invalid credentials' });
+//   }
+// });
+
+// // Protect routes with JWT (for downloading the Excel file, etc.)
+// const verifyToken = (req, res, next) => {
+//   const token = req.header('Authorization');
+//   if (!token) return res.status(401).send('Access denied. No token provided.');
+
+//   try {
+//     const decoded = jwt.verify(token, SECRET_KEY);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     return res.status(400).send('Invalid token');
+//   }
+// };
+
+// // Admin access middleware
+// const isAdmin = (req, res, next) => {
+//   if (req.user.role !== 'admin') {
+//     return res.status(403).send('Access denied. Admins only.');
+//   }
+//   next();
+// };
+
+// // Admin download route for feedback data
+// app.get('/download-feedback', verifyToken, isAdmin, (req, res) => {
+//   const filePath = path.join('/tmp', 'fabware.xlsx');
+//   console.log('Looking for file at:', filePath);  // Add debug log
+//   if (fs.existsSync(filePath)) {
+//     console.log('File found, sending...');  // Add debug log
+//     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+//     res.setHeader('Content-Disposition', 'attachment; filename=feedback_data.xlsx');
+//     res.sendFile(filePath, (err) => {
+//       if (err) {
+//         res.status(500).json({ message: 'Error sending file' });
+//       }
+//     });
+//   } else {
+//     console.log('File not found');  // Add debug log
+//     res.status(404).json({ message: 'File not found' });
+//   }
+// });
 
