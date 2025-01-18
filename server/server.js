@@ -253,14 +253,31 @@ const adminUser = {
 };
 
 // MongoDB connection with retry logic
+// const connectDB = async () => {
+//   try {
+//     await mongoose.connect(mongoURI);
+//     console.log("Connected to MongoDB");
+//   } catch (error) {
+//     console.error("Error connecting to MongoDB:", error);
+//     setTimeout(connectDB, 5000); // Retry connection after 5 seconds
+//   }
+// };
 const connectDB = async () => {
-  try {
-    await mongoose.connect(mongoURI);
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    setTimeout(connectDB, 5000); // Retry connection after 5 seconds
+  let attempts = 0;
+  const maxAttempts = 5; 
+  while (attempts < maxAttempts) {
+      try {
+          await mongoose.connect(mongoURI);
+          console.log("Connected to MongoDB");
+          return; 
+      } catch (error) {
+          console.error("Error connecting to MongoDB:", error);
+          attempts++;
+          const delay = Math.pow(2, attempts) * 1000; // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, delay)); 
+      }
   }
+  throw new Error("Failed to connect to MongoDB after multiple attempts.");
 };
 
 connectDB();
@@ -273,7 +290,7 @@ const feedbackSchema = new mongoose.Schema({
   email: String,
   rewardOption: String,
   imagePath: String,
-  
+
 });
 
 const Feedback = mongoose.model("Feedback", feedbackSchema);
