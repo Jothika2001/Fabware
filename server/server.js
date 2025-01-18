@@ -267,11 +267,13 @@ connectDB();
 
 // Feedback Schema and Model
 const feedbackSchema = new mongoose.Schema({
+
   name: String,
   phoneNumber: String,
   email: String,
   rewardOption: String,
   imagePath: String,
+  
 });
 
 const Feedback = mongoose.model("Feedback", feedbackSchema);
