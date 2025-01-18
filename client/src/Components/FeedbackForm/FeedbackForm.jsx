@@ -68,11 +68,13 @@ const FeedbackForm = ({ showModal, closeModal }) => {
       });
 
       const data = await response.json();
+      console.log("data", data);
+      
       if (response.ok) {
         console.log("Feedback submitted successfully:", data);
         setIsSubmitted(true);
       } else {
-        console.error("Error submitting feedback:", data.message);
+        console.error("Error submitting feedback data:", data.message);
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
