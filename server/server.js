@@ -216,30 +216,45 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
-const MongoClient = require("mongodb").MongoClient;
+const { MongoClient } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
 
 // MongoDB setup
-const client = new MongoClient("mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/");
+const mongoURI = process.env.MONGO_URL || "mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/";
+const client = new MongoClient(mongoURI, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,  // Ensures no deprecation warnings for new URL parser
+});
 
+let dbInstance = null;
+
+// Function to get the database instance
 const getDb = async () => {
-  if (!client.isConnected()) {
-    await client.connect();
+  if (!dbInstance) {
+    try {
+      await client.connect();
+      console.log("MongoDB connected successfully");
+      dbInstance = client.db("feedbackDB");  // Use your database name
+    } catch (error) {
+      console.error("Error connecting to MongoDB:", error);
+      throw error;
+    }
   }
-  return client.db("feedbackDB"); // Your database name
+  return dbInstance;  // Return the existing database instance
 };
 
+// Function to insert feedback data into MongoDB
 const insertFeedback = async (feedbackData) => {
   const db = await getDb();
-  const collection = db.collection("submissions"); // Your feedback collection
+  const collection = db.collection("submissions");  // Feedback collection
   await collection.insertOne(feedbackData);
 };
 
 // Set up file storage for images
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = "/tmp/feedbackimage";
+    const uploadPath = "/tmp/feedbackimage";  // Use tmp folder for file storage
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -254,21 +269,22 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;  // Use the port from the environment or default to 3000
 const SECRET_KEY = process.env.SECRET_KEY;
 const adminUser = {
   username: process.env.ADMIN_USERNAME,
   password: process.env.ADMIN_PASSWORD,
 };
 
-// Middleware
+// Middleware for CORS
 const corsOptions = {
   origin: "*",
   credentials: true,
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-app.use(express.json({orgin:"https://www.fabware.in"}));
+app.use(express.json());
+
 // Welcome route
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
@@ -308,7 +324,7 @@ app.post("/admin/login", (req, res) => {
   }
 });
 
-// Protect routes with JWT
+// Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
   const token = req.header("Authorization");
   if (!token) return res.status(401).send("Access denied. No token provided.");
@@ -330,7 +346,7 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-// Get all feedback for admin
+// Route to get all feedback for admin
 app.get("/admin/feedbacks", verifyToken, isAdmin, async (req, res) => {
   try {
     const db = await getDb();
@@ -342,7 +358,7 @@ app.get("/admin/feedbacks", verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-// Start server
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
