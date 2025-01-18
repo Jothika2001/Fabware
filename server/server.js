@@ -265,13 +265,16 @@ const adminUser = {
   password: process.env.ADMIN_PASSWORD,
 };
 
-// Middleware
 const corsOptions = {
-  origin: "*",
-  credentials: true,
-  optionSuccessStatus: 200,
+  origin: 'https://www.fabware.in', // Allow requests from this domain
+  methods: ['GET', 'POST'], // Specify the allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers if needed
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  optionSuccessStatus: 200
 };
-app.use(cors());
+
+app.use(cors(corsOptions)); // Apply CORS middleware with your custom options
+
 app.use(express.json());
 
 // Welcome route
