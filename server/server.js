@@ -220,10 +220,7 @@ const MongoClient = require("mongodb").MongoClient;
 require("dotenv").config();
 
 // MongoDB setup
-const client = new MongoClient("mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient("mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/");
 
 const getDb = async () => {
   if (!client.isConnected()) {
