@@ -220,7 +220,7 @@ const MongoClient = require("mongodb").MongoClient;
 require("dotenv").config();
 
 // MongoDB setup
-const client = new MongoClient(process.env.MONGO_URI, {
+const client = new MongoClient("mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
