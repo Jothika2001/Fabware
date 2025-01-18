@@ -223,7 +223,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 // Set up MongoDB connection URI
-const mongoURI = process.env.MONGO_URL || "mongodb+srv://username:password@cluster0.mongodb.net/feedbackDB?retryWrites=true&w=majority";
+const mongoURI = process.env.MONGO_URL || "mongodb+srv://Jothika:Jothika@123@cluster0.ckqsh.mongodb.net/feedbackDB";
 
 // Set up file storage for images (use /tmp directory for writable storage in Vercel or serverless)
 const storage = multer.diskStorage({
