@@ -44,15 +44,59 @@ const FeedbackForm = ({ showModal, closeModal }) => {
     return newErrors;
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const formErrors = validateForm();
+  //   if (Object.keys(formErrors).length > 0) {
+  //     setErrors(formErrors); 
+  //     return;
+  //   }
+
+  //   // Create FormData object to send multipart data
+  //   const formDataToSubmit = new FormData();
+  //   formDataToSubmit.append("name", formData.name);
+  //   formDataToSubmit.append("phoneNumber", formData.phoneNumber);
+  //   formDataToSubmit.append("email", formData.email);
+  //   formDataToSubmit.append("rewardOption", formData.rewardOption);
+  //   formDataToSubmit.append("image", formData.image);
+
+  //   try {
+  //     const response = await fetch(`${import.meta.env.VITE_API_URL}/submit-feedback`, {
+  //       method: "POST",
+  //       body: formDataToSubmit,
+  //     });
+
+  //     const data = await response.json();
+  //     console.log("data", data);
+      
+  //     if (response.ok) {
+  //       console.log("Feedback submitted successfully:", data);
+  //       setIsSubmitted(true);
+  //     } else {
+  //       console.error("Error submitting feedback data:", data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting feedback:", error);
+  //   }
+
+  //   setFormData({
+  //     name: "",
+  //     phoneNumber: "",
+  //     email: "",
+  //     rewardOption: "Lint Roller",
+  //     image: null,
+  //   });
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors); 
       return;
     }
-
+  
     // Create FormData object to send multipart data
     const formDataToSubmit = new FormData();
     formDataToSubmit.append("name", formData.name);
@@ -60,26 +104,34 @@ const FeedbackForm = ({ showModal, closeModal }) => {
     formDataToSubmit.append("email", formData.email);
     formDataToSubmit.append("rewardOption", formData.rewardOption);
     formDataToSubmit.append("image", formData.image);
-
+  
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/submit-feedback`, {
         method: "POST",
         body: formDataToSubmit,
       });
-
-      const data = await response.json();
-      console.log("data", data);
-      
+  
       if (response.ok) {
-        console.log("Feedback submitted successfully:", data);
+        // Assuming the server is returning the Excel file as a blob
+        const blob = await response.blob();
+        
+        // Create a link element to download the Excel file
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'feedback_data.xlsx'; // Specify the filename
+        link.click();
+  
+        // Feedback submitted successfully
+        console.log("Feedback submitted successfully.");
         setIsSubmitted(true);
       } else {
+        const data = await response.json();
         console.error("Error submitting feedback data:", data.message);
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
     }
-
+  
     setFormData({
       name: "",
       phoneNumber: "",
@@ -88,6 +140,7 @@ const FeedbackForm = ({ showModal, closeModal }) => {
       image: null,
     });
   };
+  
 
   const handleClose = () => {
     setIsSubmitted(false); 
