@@ -212,7 +212,6 @@
 
 
 
-
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
@@ -241,21 +240,30 @@ const storage = multer.diskStorage({
     cb(null, sanitizedFileName);
   },
 });
+
 const upload = multer({ storage });
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 const SECRET_KEY = process.env.SECRET_KEY;
 const adminUser = {
   username: process.env.ADMIN_USERNAME,
   password: process.env.ADMIN_PASSWORD,
 };
 
-// MongoDB connection
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.log("Error connecting to MongoDB:", err));
+// MongoDB connection with retry logic
+const connectDB = async () => {
+  try {
+    await mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    setTimeout(connectDB, 5000); // Retry connection after 5 seconds
+  }
+};
+
+connectDB();
 
 // Feedback Schema and Model
 const feedbackSchema = new mongoose.Schema({
@@ -265,6 +273,7 @@ const feedbackSchema = new mongoose.Schema({
   rewardOption: String,
   imagePath: String,
 });
+
 const Feedback = mongoose.model("Feedback", feedbackSchema);
 
 // Middleware
@@ -286,6 +295,7 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+// Submit feedback route
 app.post("/submit-feedback", upload.single("image"), async (req, res) => {
   const feedbackData = req.body;
   const imagePath = req.file ? `/tmp/feedbackimage/${req.file.filename}` : null;
@@ -295,7 +305,7 @@ app.post("/submit-feedback", upload.single("image"), async (req, res) => {
   }
 
   try {
-    // Save the feedback data to MongoDB
+    // Save feedback data to MongoDB
     const feedback = new Feedback(feedbackData);
     await feedback.save();
 
@@ -305,6 +315,7 @@ app.post("/submit-feedback", upload.single("image"), async (req, res) => {
   }
 });
 
+// Admin login route
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -318,7 +329,7 @@ app.post("/admin/login", (req, res) => {
   } else {
     res
       .status(401)
-      .json({ message: "Invalid credentials...This page is only for Admin" });
+      .json({ message: "Invalid credentials. This page is only for Admin." });
   }
 });
 
@@ -344,6 +355,7 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
+// Download feedback route
 app.get("/download-feedback", verifyToken, isAdmin, async (req, res) => {
   try {
     // Fetch feedback data from the database
@@ -384,7 +396,7 @@ app.get("/download-feedback", verifyToken, isAdmin, async (req, res) => {
   }
 });
 
-// Correct the static folder path in your server.js
+// Serve static files
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
 // Send the index.html for all other routes
