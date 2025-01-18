@@ -585,6 +585,76 @@ app.listen(PORT, () => {
 //   }
 // });
 // Post route to handle feedback and image uploads
+// app.post("/submit-feedback", upload.single("image"), async (req, res) => {
+//   const feedbackData = req.body;
+//   const imagePath = req.file ? path.join("/tmp/feedbackimage", req.file.filename) : null;
+
+//   if (imagePath) {
+//     feedbackData.imagePath = imagePath;
+//   }
+
+//   try {
+//     const workbook = new ExcelJS.Workbook();
+//     const worksheet = workbook.addWorksheet("Feedback");
+
+//     // Add headers to the worksheet
+//     worksheet.columns = [
+//       { header: 'Name', key: 'name', width: 20 },
+//       { header: 'Phone Number', key: 'phoneNumber', width: 20 },
+//       { header: 'Email', key: 'email', width: 25 },
+//       { header: 'Reward Option', key: 'rewardOption', width: 20 },
+//       { header: 'Image Path', key: 'imagePath', width: 40 },
+//       { header: 'Image', key: 'image', width: 30 }
+//     ];
+
+//     worksheet.getRow(1).font = { bold: true };
+//     worksheet.getRow(1).alignment = {
+//       horizontal: "center",
+//       vertical: "middle",
+//     };
+//     worksheet.getRow(1).height = 30;
+
+//     // Add a new row with feedback data
+//     const row = worksheet.addRow([
+//       feedbackData.name,
+//       feedbackData.phoneNumber,
+//       feedbackData.email,
+//       feedbackData.rewardOption,
+//       imagePath || "", // If no image, store an empty string
+//       "", // Placeholder for image
+//     ]);
+
+//     row.height = 50;
+//     row.alignment = { vertical: "middle", horizontal: "center" };
+
+//     // If there's an image, add it as an embedded image in the Excel sheet
+//     if (imagePath) {
+//       const imageBuffer = fs.readFileSync(imagePath);
+//       const imageId = workbook.addImage({
+//         buffer: imageBuffer,
+//         extension: 'jpeg', // Assuming it's a JPEG image
+//       });
+
+//       worksheet.addImage(imageId, {
+//         tl: { col: 6, row: row.number - 1 }, // Place image in the 6th column
+//         ext: { width: 100, height: 100 },
+//       });
+
+//       worksheet.getRow(row.number).height = 200; // Adjust row height for image
+//     }
+
+//     // Store the Excel file temporarily on the server
+//     const excelFilePath = path.join("/tmp", "feedback_data.xlsx");
+//     await workbook.xlsx.writeFile(excelFilePath);
+
+//     res.json({
+//       message: "Feedback submitted successfully",
+//       downloadLink: "/download-feedback" // Provide a download link for the admin
+//     });
+//   } catch (e) {
+//     res.status(500).json({ message: e.message });
+//   }
+// });
 app.post("/submit-feedback", upload.single("image"), async (req, res) => {
   const feedbackData = req.body;
   const imagePath = req.file ? path.join("/tmp/feedbackimage", req.file.filename) : null;
@@ -594,25 +664,36 @@ app.post("/submit-feedback", upload.single("image"), async (req, res) => {
   }
 
   try {
+    // Path to the Excel file (use /tmp for serverless writable storage)
+    const excelFilePath = path.join("/tmp", "feedback_data.xlsx");
+
+    // Create a new workbook or load an existing one
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Feedback");
 
-    // Add headers to the worksheet
-    worksheet.columns = [
-      { header: 'Name', key: 'name', width: 20 },
-      { header: 'Phone Number', key: 'phoneNumber', width: 20 },
-      { header: 'Email', key: 'email', width: 25 },
-      { header: 'Reward Option', key: 'rewardOption', width: 20 },
-      { header: 'Image Path', key: 'imagePath', width: 40 },
-      { header: 'Image', key: 'image', width: 30 }
-    ];
+    // If the Excel file already exists, read it, otherwise, create a new one
+    if (fs.existsSync(excelFilePath)) {
+      await workbook.xlsx.readFile(excelFilePath);
+    } else {
+      // Add a worksheet if the file doesn't exist
+      const worksheet = workbook.addWorksheet("Feedback");
 
-    worksheet.getRow(1).font = { bold: true };
-    worksheet.getRow(1).alignment = {
-      horizontal: "center",
-      vertical: "middle",
-    };
-    worksheet.getRow(1).height = 30;
+      // Add headers if it's a new file
+      worksheet.columns = [
+        { header: 'Name', key: 'name', width: 20 },
+        { header: 'Phone Number', key: 'phoneNumber', width: 20 },
+        { header: 'Email', key: 'email', width: 25 },
+        { header: 'Reward Option', key: 'rewardOption', width: 20 },
+        { header: 'Image Path', key: 'imagePath', width: 40 },
+        { header: 'Image', key: 'image', width: 30 }
+      ];
+
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).alignment = { horizontal: "center", vertical: "middle" };
+      worksheet.getRow(1).height = 30;
+    }
+
+    // Get the first worksheet (the one we are working with)
+    const worksheet = workbook.worksheets[0];
 
     // Add a new row with feedback data
     const row = worksheet.addRow([
@@ -643,10 +724,10 @@ app.post("/submit-feedback", upload.single("image"), async (req, res) => {
       worksheet.getRow(row.number).height = 200; // Adjust row height for image
     }
 
-    // Store the Excel file temporarily on the server
-    const excelFilePath = path.join("/tmp", "feedback_data.xlsx");
+    // Save the workbook (either new or updated) to the same file
     await workbook.xlsx.writeFile(excelFilePath);
 
+    // Respond with a success message and a download link
     res.json({
       message: "Feedback submitted successfully",
       downloadLink: "/download-feedback" // Provide a download link for the admin
@@ -655,6 +736,7 @@ app.post("/submit-feedback", upload.single("image"), async (req, res) => {
     res.status(500).json({ message: e.message });
   }
 });
+
 
 app.post("/admin/login", (req, res) => {
   const { username, password } = req.body;
