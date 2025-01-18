@@ -349,8 +349,9 @@ const isAdmin = (req, res, next) => {
 // Admin download route for feedback data
 app.get('/download-feedback', verifyToken, isAdmin, (req, res) => {
   const filePath = path.join('/tmp', 'fabware.xlsx');
-
+  console.log('Looking for file at:', filePath);  // Add debug log
   if (fs.existsSync(filePath)) {
+    console.log('File found, sending...');  // Add debug log
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=feedback_data.xlsx');
     res.sendFile(filePath, (err) => {
@@ -359,6 +360,8 @@ app.get('/download-feedback', verifyToken, isAdmin, (req, res) => {
       }
     });
   } else {
+    console.log('File not found');  // Add debug log
     res.status(404).json({ message: 'File not found' });
   }
 });
+
