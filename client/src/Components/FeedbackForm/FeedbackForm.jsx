@@ -113,13 +113,13 @@ const FeedbackForm = ({ showModal, closeModal }) => {
   
       if (response.ok) {
         // Assuming the server is returning the Excel file as a blob
-        const blob = await response.blob();
+        // const blob = await response.blob();
         
-        // Create a link element to download the Excel file
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = 'feedback_data.xlsx'; // Specify the filename
-        link.click();
+        // // Create a link element to download the Excel file
+        // const link = document.createElement('a');
+        // link.href = URL.createObjectURL(blob);
+        // link.download = 'feedback_data.xlsx'; // Specify the filename
+        // link.click();
   
         // Feedback submitted successfully
         console.log("Feedback submitted successfully.");
