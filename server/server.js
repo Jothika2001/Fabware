@@ -270,8 +270,7 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
-app.use(express.json());
-
+app.use(express.json({orgin:"https://www.fabware.in"}));
 // Welcome route
 app.get("/", (req, res) => {
   res.send("Welcome to the API");
