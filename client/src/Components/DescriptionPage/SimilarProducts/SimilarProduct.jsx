@@ -162,7 +162,6 @@ function SimilarProduct({ data }) {
                   <div
                     key={index}
                     style={{
-                      color:"yellow",
                       width: "19px",
                       height: "19px",
                       marginRight: "5px",
