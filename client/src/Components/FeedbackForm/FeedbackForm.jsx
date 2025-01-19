@@ -32,7 +32,7 @@ const FeedbackForm = ({ showModal, closeModal }) => {
 
   // Mobile number validation regex
 const validatePhoneNumber = (phoneNumber) => {
-  // Example pattern for a 10-digit mobile number (adjust as needed for your specific region)
+  // Example pattern for a 10-digit mobile number
   const phonePattern = /^\d{10}$/;
   return phonePattern.test(phoneNumber);
 };
