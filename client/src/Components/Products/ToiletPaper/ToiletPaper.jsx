@@ -20,7 +20,7 @@ function ToiletPaper() {
     },
     sizeAvailable: false,
     link: "https://amzn.in/d/6HKeKI2",
-    cost: "534",
+    cost: "495",
     strikeCost:"793",
     starRate:"4.3",
     reviews:"800+",

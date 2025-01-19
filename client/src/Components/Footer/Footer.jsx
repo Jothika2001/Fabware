@@ -58,10 +58,10 @@ function Footer() {
                 >
                   <i className="fa-brands fa-instagram"></i> 
                 </a>
-                <a href="mailto:fabware087@gmail.com">
+                <a href="mailto:uberfyservices@gmail.com">
                   <i className="fa-solid fa-envelope"></i> 
                 </a>
-                <a href="tel:+919876543210">
+                <a href="tel:+919940557013">
                   <i className="fa-solid fa-phone"></i>
                 </a>
               </div>

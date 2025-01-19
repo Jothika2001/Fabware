@@ -66,7 +66,7 @@ function Roller() {
     },
     sizeAvailable: true,
     link: "https://amzn.in/d/aBJxyB3",
-    cost: "549",
+    cost: "521",
     strikeCost: "996",
     starRate:"4.2",
     reviews:"1k+",

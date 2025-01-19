@@ -11,17 +11,17 @@ function SimilarProducts() {
       image: images.toiletPaper,
       name: "Toilet Paper Holder for Bathroom ACCESSORIES. Bathroom Organizer Tissue Paper Holder (ABS Plastic SELF Adhesive Toilet Paper Holder with Cover)",
       link: "/products/toilet-paper-holder",
-      cost: "534",
+      cost: "495",
       review:"800+",
-      rating: 4,
+      rating: 4.3,
     },
     {
       image: images.roller,
       name: "Lint Remover for Clothes - Sticky Lint Roller for Clothes, Furniture, Wool, Fur, Coat, Car Seats, Fabric, Dust Cleaner, Pet Hair Remover with 1 Handle, 4 Refills Total 240 Sheets & 1 Cover",
       link: "/products/lint-roller",
-      cost: "549",
+      cost: "521",
       review:"1k+",
-      rating: 4,
+      rating: 4.3,
     },
     {
       image: images.waterBottle,
@@ -29,7 +29,7 @@ function SimilarProducts() {
       link: "/products/water-bottle",
       cost: "846",
       review:"1.2k+",
-      rating: 4,
+      rating: 4.3,
     },
   ];
 

@@ -122,13 +122,13 @@ function Contact() {
             <div className="visit">
               <h3 style={{ marginBottom: "10px" }}>Visit Us</h3>
               <p>Fabware, Tamilnadu, India</p>
-              <p>Phone: +919876543210</p>
+              <p>Phone: +91 9940557013</p>
             </div>
 
             <div className="line">
               <h3 style={{ marginBottom: "5px" }}>Get In Touch</h3>
               <p>You can get in touch with us on this provided email.</p>
-              <p>Email: fabware087@gmail.com</p>
+              <p>Email: uberfyservices@gmail.com</p>
             </div>
           </div>
         </div>

@@ -185,7 +185,7 @@ function DescriptionHero({ data, style }) {
 
               {/* Buy Button */}
               <div className="buy-button mt-4 mx-2">
-              <a href={data.link} style={{ textDecoration: "none" }}>
+              <a href={data.link} style={{ textDecoration: "none" }} target="blank">
                 <button className="text-light"  style={{maxWidth:"380px", width:"100%"}}>
                  
                     <img src={images.bag} alt="" />Proceed to Buy

@@ -33,7 +33,7 @@ function Hero() {
                     objectPosition: "center",
                   }}
                 />
-                <a href="/products">
+                <a href="https://www.amazon.in/stores/Fabware/page/68C2D03C-1D28-4D81-908A-2CF03AE35B84?ref_=ast_bln&store_ref=bl_ast_dp_brandLogo_sto" target="blank">
                   <button
                     className="btn first-start-button text-dark"
                     style={{
