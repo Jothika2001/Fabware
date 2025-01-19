@@ -30,10 +30,22 @@ const FeedbackForm = ({ showModal, closeModal }) => {
     return emailPattern.test(email);
   };
 
+  // Mobile number validation regex
+const validatePhoneNumber = (phoneNumber) => {
+  // Example pattern for a 10-digit mobile number (adjust as needed for your specific region)
+  const phonePattern = /^\d{10}$/;
+  return phonePattern.test(phoneNumber);
+};
+
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone number is required";
+    //if (!formData.phoneNumber) newErrors.phoneNumber = "Phone number is required";
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "Phone number is required";
+    } else if (!validatePhoneNumber(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Invalid phone number format";
+    }
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!validateEmail(formData.email)) {
@@ -122,14 +134,14 @@ const FeedbackForm = ({ showModal, closeModal }) => {
         // link.click();
   
         // Feedback submitted successfully
-        console.log("Feedback submitted successfully.");
+       // console.log("Feedback submitted successfully.");
         setIsSubmitted(true);
       } else {
         const data = await response.json();
-        console.error("Error submitting feedback data:", data.message);
+       // console.error("Error submitting feedback data:", data.message);
       }
     } catch (error) {
-      console.error("Error submitting feedback:", error);
+     // console.error("Error submitting feedback:", error);
     }
   
     setFormData({
@@ -186,7 +198,7 @@ const FeedbackForm = ({ showModal, closeModal }) => {
                   <div className="form-group">
                     <label htmlFor="phoneNumber">Phone Number:</label>
                     <input
-                      type="tel"
+                      type="number"
                       id="phoneNumber"
                       name="phoneNumber"
                       value={formData.phoneNumber}
