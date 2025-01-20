@@ -81,6 +81,7 @@ function Contact() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
+                    required
                   />
                 </div>
                 <div>
@@ -91,6 +92,7 @@ function Contact() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
