@@ -8,9 +8,19 @@ import { Link, NavLink } from "react-router-dom";
 function Footer() {
   const [email, setEmail] = useState("");
 
+  const validateEmail = (email) => {
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(email);
+  };
+
   const sendEmail = (e) => {
     e.preventDefault();
     if (!email) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
       alert("Please enter a valid email address.");
       return;
     }

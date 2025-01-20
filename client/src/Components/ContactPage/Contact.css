@@ -26,7 +26,8 @@ body {
 }
 
 .name,
-.email {
+.email,
+.phoneNumber {
   width: 95%;
   padding: 10px;
   border: 0.1px solid black;
