@@ -412,7 +412,7 @@ app.get("/download-feedback", verifyToken, isAdmin, async (req, res) => {
           extension: 'jpeg', 
         });
         worksheet.addImage(imageId, {
-          tl: { col: 6, row: worksheet.rowCount + 5 }, 
+          tl: { col: 6, row: worksheet.rowCount + 1 }, 
           ext: { width: 100, height: 100 }, 
         });
       }
